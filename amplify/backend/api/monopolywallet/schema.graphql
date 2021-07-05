@@ -1,0 +1,32 @@
+type Game @model(subscriptions: null) {
+  id: ID!
+  password: String!
+  players: [Player] @connection(keyName: "byGame", fields: ["id"])
+  events: [String]
+}
+
+type Player
+  @model(subscriptions: null)
+  @key(name: "byGame", fields: ["gameId", "name"]) {
+  id: ID!
+  gameId: ID!
+  name: String!
+  account: Int!
+}
+
+type Subscription {
+  # onCreateComment(content: String): Comment @aws_subscribe(mutations: ["createComment"])
+  onUpdatePlayer(id: ID): Player @aws_subscribe(mutations: ["updatePlayer"])
+  onUpdateGame(id: ID): Game
+    @aws_subscribe(mutations: ["updateGame", "addEventToGame"])
+  # onDeleteComment(id: ID, content: String): Comment @aws_subscribe(mutations: ["deleteComment"])
+}
+
+type Mutation {
+  addEventToGame(input: GameEventInput): Game
+}
+
+input GameEventInput {
+  id: ID!
+  message: String!
+}

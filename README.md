@@ -1,3 +1,15 @@
+# Overview
+
+Monopoly wallet for tracking player money and transactions.
+
+Create a game and invite players.
+Player wallets are updated in real time based on transactions.
+Enjoy Monopoly without the need to count and track money manually.
+
+Full-stack application created using AWS Amplify.
+
+React client, GraphQL API using AWS AppSync.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

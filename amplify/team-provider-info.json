@@ -1,0 +1,23 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-monopolywallet-dev-05549-authRole",
+            "UnauthRoleArn": "arn:aws:iam::057817149651:role/amplify-monopolywallet-dev-05549-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::057817149651:role/amplify-monopolywallet-dev-05549-authRole",
+            "Region": "eu-west-1",
+            "DeploymentBucketName": "amplify-monopolywallet-dev-05549-deployment",
+            "UnauthRoleName": "amplify-monopolywallet-dev-05549-unauthRole",
+            "StackName": "amplify-monopolywallet-dev-05549",
+            "StackId": "arn:aws:cloudformation:eu-west-1:057817149651:stack/amplify-monopolywallet-dev-05549/02e9e350-9909-11eb-9105-02fcd0eac715",
+            "AmplifyAppId": "ds8pcmdxi5rhl"
+        },
+        "categories": {
+            "hosting": {
+                "amplifyhosting": {
+                    "appId": "ds8pcmdxi5rhl",
+                    "type": "manual"
+                }
+            }
+        }
+    }
+}
