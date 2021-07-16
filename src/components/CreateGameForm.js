@@ -6,7 +6,17 @@ import { createGame, createPlayer, updatePlayer } from "./../graphql/mutations";
 import { getPlayer } from "./../graphql/queries";
 import awsExports from "./../aws-exports";
 import { useHistory } from "react-router";
+import { Box, Button, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 Amplify.configure(awsExports);
+
+const MAIN_COLOR = "#CC2626";
+const useStyles = makeStyles((theme) => ({
+  button: {
+    background: MAIN_COLOR,
+    marginTop: 8,
+  },
+}));
 
 const initialState = {
   username: "",
@@ -14,6 +24,7 @@ const initialState = {
 };
 
 export default function CreateGameForm() {
+  const classes = useStyles();
   let history = useHistory();
 
   const [formState, setFormState] = useState(initialState);
@@ -139,18 +150,36 @@ export default function CreateGameForm() {
 
   return (
     <div>
-      <h2>Create Game</h2>
-      <input
-        onChange={(event) => setInput("username", event.target.value)}
-        value={formState.username}
-        placeholder="create a user name"
-      />
-      <input
-        onChange={(event) => setInput("password", event.target.value)}
-        value={formState.password}
-        placeholder="password"
-      />
-      <button onClick={addGame}>Create Game</button>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        m={2}
+      >
+        <Typography variant="h6">Create Game</Typography>
+        <Box m={1}>
+          <input
+            onChange={(event) => setInput("username", event.target.value)}
+            value={formState.username}
+            placeholder="create a user name"
+          />
+        </Box>
+        <Box m={1}>
+          <input
+            onChange={(event) => setInput("password", event.target.value)}
+            value={formState.password}
+            placeholder="password"
+          />
+        </Box>
+        <Button
+          variant="contained"
+          className={classes.button}
+          onClick={addGame}
+        >
+          Create Game
+        </Button>
+      </Box>
     </div>
   );
 }
