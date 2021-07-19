@@ -9,10 +9,37 @@ import {
 } from "./../graphql/mutations";
 import Cookies from "js-cookie";
 import { onUpdatePlayer, onUpdateGame } from "./../graphql/subscriptions";
+import MainAppBar from "./MainAppBar";
+import {
+  Box,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Typography,
+  Paper,
+  Drawer,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  Slider,
+  TextField,
+  InputAdornment,
+  IconButton,
+} from "@material-ui/core";
+import CloseIcon from "@material-ui/icons/Close";
+import { makeStyles } from "@material-ui/core/styles";
+import { myStyles } from "../styles/componentStyles";
+
+const useStyles = makeStyles((theme) => myStyles);
 
 const initialData = {
   id: "fetching...",
-  players: [],
+  players: {
+    items: [],
+  },
 };
 
 const initialPlayerData = {
@@ -21,6 +48,7 @@ const initialPlayerData = {
 };
 
 export default function GameDataDisplay(props) {
+  const classes = useStyles();
   // state *********************************************************
   const [gameData, setGameData] = useState(initialData);
   const [playerData, setPlayerData] = useState(initialPlayerData);
@@ -101,11 +129,11 @@ export default function GameDataDisplay(props) {
 
   function updateTransactPartners(event) {
     console.log("updating transact partners!");
-    console.log(event.target);
-    console.log(`${event.target.id} checked: ${event.target.checked}`);
+    console.log(event.target.name);
+    console.log(`${event.target.name} checked: ${event.target.checked}`);
     let newValues = event.target.checked
-      ? [...transactPartners, event.target.id]
-      : [...transactPartners].filter((element) => element != event.target.id);
+      ? [...transactPartners, event.target.name]
+      : [...transactPartners].filter((element) => element != event.target.name);
     console.log(`new values are: ${newValues}`);
     setTransactPartners(newValues);
   }
@@ -120,6 +148,23 @@ export default function GameDataDisplay(props) {
   function removeExtraFieldsFromPlayerData(data) {
     delete data.createdAt;
     delete data.updatedAt;
+  }
+
+  const handleSliderChange = (event, newValue) => {
+    setTransactAmount(newValue);
+  };
+
+  function transactInputsAreValid() {
+    let isAmountInRange = true;
+    if (transactType == "Pay") {
+      // when paying, can't pay more than you have
+      isAmountInRange = transactAmount <= playerData.account;
+    }
+    return (
+      typeof transactAmount === "number" &&
+      isAmountInRange &&
+      transactPartners.length > 0
+    );
   }
 
   // onLoad *******************************************
@@ -187,7 +232,7 @@ export default function GameDataDisplay(props) {
     let data, newAccount, updateData;
     for (const partner of transactPartners) {
       let message = `${playerData.name} ${transactType} ${preposition} ${partner} $${transactAmount}`;
-      if (partner != "bank") {
+      if (partner != "Bank") {
         data = await getPlayerData(getPlayerIdByName(partner));
         newAccount = data.account + flow * transactAmount;
         updateData = { id: data.id, account: newAccount };
@@ -213,78 +258,176 @@ export default function GameDataDisplay(props) {
     console.log(events);
   }
 
+  function getTransactMessage() {
+    if (transactType == "Pay") {
+      return "Who would you like to pay?";
+    } else {
+      return "Who would you like to collect from?";
+    }
+  }
+
   // *********************************************************
 
   const TransactAction = () => {
     return (
-      <div>
-        <h4>{transactType}</h4>
-        <h5>Choose Player(s):</h5>
-        <div>
-          <input
-            type="checkbox"
-            id="bank"
-            name="bank"
-            onChange={updateTransactPartners}
-          />
-          <label htmlFor="bank">Bank</label>
-        </div>
-        {gameData.players.items
-          .filter((e) => e.id != playerData.id)
-          .map((player, i) => (
-            <div key={i}>
-              <input
-                type="checkbox"
-                id={player.name}
-                name={player.name}
-                onChange={updateTransactPartners}
+      <Drawer
+        anchor="bottom"
+        classes={{ paper: classes.transactDrawer }}
+        open={showTransact}
+        onClose={(event) => setShowTransact(false)}
+      >
+        <IconButton
+          aria-label="close"
+          className={classes.closeButton}
+          onClick={(event) => setShowTransact(false)}
+        >
+          <CloseIcon />
+        </IconButton>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          m={2}
+        >
+          <Typography variant="h6" className={classes.boldText}>
+            {getTransactMessage()}
+          </Typography>
+          <h5>Choose Player(s):</h5>
+          <div>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    className={classes.checkbox}
+                    color="default"
+                    checked={transactPartners.includes("Bank")}
+                    onChange={updateTransactPartners}
+                    name="Bank"
+                  />
+                }
+                label="Bank"
               />
-              <label htmlFor={player.name}>{player.name}</label>
-            </div>
-          ))}
-        <div>
-          <h4>Amount</h4>
-          <input
-            onChange={(event) => setTransactAmount(event.target.value)}
-            value={transactAmount}
-            placeholder={`enter amount to ${transactType}`}
-          />
-        </div>
-        <div>
-          <button onClick={completeTransaction}>Confirm</button>
-        </div>
-      </div>
+              {gameData.players.items
+                .filter((e) => e.id != playerData.id)
+                .map((player, i) => (
+                  <FormControlLabel
+                    key={i}
+                    control={
+                      <Checkbox
+                        className={classes.checkbox}
+                        color="default"
+                        checked={transactPartners.includes(player.name)}
+                        onChange={updateTransactPartners}
+                        name={player.name}
+                      />
+                    }
+                    label={player.name}
+                  />
+                ))}
+            </FormGroup>
+          </div>
+          <Box mt={4}></Box>
+          <Typography variant="h6" className={classes.boldText}>
+            How much?
+          </Typography>
+          <div>
+            <TextField
+              value={transactAmount}
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">$</InputAdornment>
+                ),
+              }}
+              className={classes.amountField}
+              inputProps={{
+                style: { textAlign: "right" },
+              }}
+              onChange={(event) => {
+                setTransactAmount(
+                  event.target.value === "" ? "" : Number(event.target.value)
+                );
+              }}
+            />
+            <Slider
+              className={classes.slider}
+              onChange={handleSliderChange}
+              value={typeof transactAmount === "number" ? transactAmount : 0}
+              min={0}
+              max={playerData.account}
+              classes={{
+                thumb: classes.sliderThumb,
+              }}
+            />
+          </div>
+          <Box mt={4}></Box>
+          <div>
+            <Button
+              className={classes.button}
+              onClick={completeTransaction}
+              disabled={!transactInputsAreValid()}
+            >
+              Confirm {transactType}
+            </Button>
+          </div>
+        </Box>
+      </Drawer>
     );
   };
 
   return (
     <div>
-      <h2>Monopoly Wallet</h2>
-      <h4>My Account:</h4>
-      <div>{playerData.account}</div>
-      <button
-        onClick={() => {
-          setTransactType("Pay");
-          setShowTransact(true);
-        }}
+      <MainAppBar />
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        m={2}
       >
-        Pay
-      </button>
-      <button
-        onClick={() => {
-          setTransactType("Collect");
-          setShowTransact(true);
-        }}
-      >
-        Collect
-      </button>
-      {showTransact && TransactAction()}
-      <h4>Events</h4>
-      <ul>
-        {events.map((event, i) => (
-          <li key={i}>{event}</li>
-        ))}
-      </ul>
+        <Typography variant="h6" className={classes.boldText}>
+          My Account:
+        </Typography>
+        <Typography variant="h6" className={classes.boldText}>
+          ${playerData.account}
+        </Typography>
+        <Button
+          className={classes.button}
+          onClick={() => {
+            setTransactType("Pay");
+            setShowTransact(true);
+          }}
+        >
+          Pay
+        </Button>
+        <Button
+          className={classes.button}
+          onClick={() => {
+            setTransactType("Collect");
+            setShowTransact(true);
+          }}
+        >
+          Collect
+        </Button>
+        {TransactAction()}
+        <Box mt={4}>
+          <Typography variant="h6" className={classes.boldText}>
+            Events
+          </Typography>
+        </Box>
+        <TableContainer component={Paper} className={classes.eventTable}>
+          <Table>
+            <TableBody>
+              {events.map((event, i) => (
+                <TableRow key={i}>
+                  <TableCell align="center">{event}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
     </div>
   );
 }

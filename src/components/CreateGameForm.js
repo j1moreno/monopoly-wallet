@@ -8,15 +8,10 @@ import awsExports from "./../aws-exports";
 import { useHistory } from "react-router";
 import { Box, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { myStyles } from "../styles/componentStyles";
 Amplify.configure(awsExports);
 
-const MAIN_COLOR = "#CC2626";
-const useStyles = makeStyles((theme) => ({
-  button: {
-    background: MAIN_COLOR,
-    marginTop: 8,
-  },
-}));
+const useStyles = makeStyles((theme) => myStyles);
 
 const initialState = {
   username: "",
