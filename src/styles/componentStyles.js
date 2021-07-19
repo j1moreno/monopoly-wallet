@@ -65,7 +65,7 @@ const myStyles = {
     color: MAIN_COLOR,
   },
   sliderThumb: {
-    "&:hover": {
+    "&:hover, &$active": {
       boxShadow: `0 0 0px 8px ${MAIN_COLOR}80`,
     },
   },
