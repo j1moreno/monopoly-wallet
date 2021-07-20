@@ -28,10 +28,15 @@ import {
   TextField,
   InputAdornment,
   IconButton,
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  DialogTitle,
 } from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { makeStyles } from "@material-ui/core/styles";
-import { myStyles } from "../styles/componentStyles";
+import { myStyles, MAIN_COLOR } from "../styles/componentStyles";
 
 const useStyles = makeStyles((theme) => myStyles);
 
@@ -57,6 +62,7 @@ export default function GameDataDisplay(props) {
   const [transactAmount, setTransactAmount] = useState(0);
   const [transactPartners, setTransactPartners] = useState([]);
   const [events, setEvents] = useState([]);
+  const [showInviteDialog, setShowInviteDialog] = useState(false);
 
   // helper - server *******************************************
   async function getGameData() {
@@ -155,16 +161,29 @@ export default function GameDataDisplay(props) {
   };
 
   function transactInputsAreValid() {
-    let isAmountInRange = true;
-    if (transactType == "Pay") {
-      // when paying, can't pay more than you have
-      isAmountInRange = transactAmount <= playerData.account;
-    }
+    let isAmountInRange = transactAmount <= getTransactMax();
     return (
       typeof transactAmount === "number" &&
+      transactAmount > 0 &&
       isAmountInRange &&
       transactPartners.length > 0
     );
+  }
+
+  function getTransactMax() {
+    if (transactType === "Pay") {
+      return playerData.account;
+    } else {
+      // when collecting, can't collect more than the min account in selected players
+      let selectedPlayers = gameData.players.items.filter((p) =>
+        transactPartners.includes(p.name)
+      );
+      if (selectedPlayers.length === 0) {
+        return playerData.account;
+      } else {
+        return Math.min(...selectedPlayers.map((p) => p.account));
+      }
+    }
   }
 
   // onLoad *******************************************
@@ -175,6 +194,9 @@ export default function GameDataDisplay(props) {
     setPlayerData(fetchedPlayerData);
     const enterMessage = `${fetchedPlayerData.name} has entered the game!`;
     publishEvent(props.gameId, enterMessage);
+    if (fetchedGameData.players.items.length < 2) {
+      setShowInviteDialog(true);
+    }
   }, []);
 
   // subscribe to events
@@ -349,6 +371,11 @@ export default function GameDataDisplay(props) {
                   event.target.value === "" ? "" : Number(event.target.value)
                 );
               }}
+              helperText={
+                transactType === "Collect" && transactAmount > getTransactMax()
+                  ? "One or more players can't afford to pay!"
+                  : ""
+              }
             />
             <Slider
               className={classes.slider}
@@ -403,7 +430,9 @@ export default function GameDataDisplay(props) {
         </Button>
         <Button
           className={classes.button}
-          onClick={() => {
+          onClick={async () => {
+            let fetchedGameData = await getGameData();
+            setGameData(fetchedGameData);
             setTransactType("Collect");
             setShowTransact(true);
           }}
@@ -419,7 +448,7 @@ export default function GameDataDisplay(props) {
         <TableContainer component={Paper} className={classes.eventTable}>
           <Table>
             <TableBody>
-              {events.map((event, i) => (
+              {[...events].reverse().map((event, i) => (
                 <TableRow key={i}>
                   <TableCell align="center">{event}</TableCell>
                 </TableRow>
@@ -428,6 +457,23 @@ export default function GameDataDisplay(props) {
           </Table>
         </TableContainer>
       </Box>
+      <Dialog open={showInviteDialog}>
+        <DialogTitle>Welcome!</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Looks like you're the only player here. Invite other players by
+            sharing this URL + password!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            style={{ color: MAIN_COLOR }}
+            onClick={() => setShowInviteDialog(false)}
+          >
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

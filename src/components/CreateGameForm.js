@@ -6,7 +6,7 @@ import { createGame, createPlayer, updatePlayer } from "./../graphql/mutations";
 import { getPlayer } from "./../graphql/queries";
 import awsExports from "./../aws-exports";
 import { useHistory } from "react-router";
-import { Box, Button, Typography } from "@material-ui/core";
+import { Box, Button, CircularProgress, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { myStyles } from "../styles/componentStyles";
 Amplify.configure(awsExports);
@@ -23,6 +23,7 @@ export default function CreateGameForm() {
   let history = useHistory();
 
   const [formState, setFormState] = useState(initialState);
+  const [isLoading, setIsLoading] = useState(false);
 
   function setInput(key, value) {
     setFormState({ ...formState, [key]: value });
@@ -124,6 +125,7 @@ export default function CreateGameForm() {
     }
     // alert(`username is: ${formState.username}\npwd is: ${formState.password}`)
     try {
+      setIsLoading(true);
       const newGameData = createNewGameData();
       console.log("creating game...");
       let createGameResponse = await API.graphql(
@@ -137,6 +139,7 @@ export default function CreateGameForm() {
       await upsertPlayerToGame(createdGameId);
       console.log(`redirecting to ${createdGameId}...`);
       history.push(`/${createdGameId}`);
+      setIsLoading(false);
     } catch (err) {
       console.log("error creating game or player:", err);
       alert("error creating game or player!");
@@ -152,7 +155,9 @@ export default function CreateGameForm() {
         justifyContent="center"
         m={2}
       >
-        <Typography variant="h6">Create Game</Typography>
+        <Typography variant="h6" className={classes.boldText}>
+          Create Game
+        </Typography>
         <Box m={1}>
           <input
             onChange={(event) => setInput("username", event.target.value)}
@@ -164,16 +169,18 @@ export default function CreateGameForm() {
           <input
             onChange={(event) => setInput("password", event.target.value)}
             value={formState.password}
-            placeholder="password"
+            placeholder="create a password"
           />
         </Box>
         <Button
           variant="contained"
           className={classes.button}
           onClick={addGame}
+          disabled={!inputsAreValid()}
         >
           Create Game
         </Button>
+        {isLoading && <CircularProgress className={classes.progress} />}
       </Box>
     </div>
   );

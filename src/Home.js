@@ -4,7 +4,7 @@ import Amplify from "aws-amplify";
 import awsExports from "./aws-exports";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Typography from "@material-ui/core/Typography";
-import { AppBar, Toolbar, Button, Box } from "@material-ui/core";
+import { AppBar, Toolbar, Button, Box, Container } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import MainAppBar from "./components/MainAppBar";
 import { myStyles } from "./styles/componentStyles";
@@ -21,22 +21,24 @@ export default function Home() {
     <div>
       <CssBaseline />
       <MainAppBar />
-      <div>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          {!isDialogVisible && (
-            <Button
-              variant="contained"
-              className={classes.button}
-              onClick={() => setIsDialogVisible(true)}
-            >
-              Create Game
-            </Button>
-          )}
+      <Container maxWidth="xs">
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <div>
+            <Typography variant="h6">
+              Create a game and track player accounts and transactions. <br />{" "}
+              Play Monopoly without counting cash.
+            </Typography>
+          </div>
+          <div>
+            <CreateGameForm />
+          </div>
         </Box>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          {isDialogVisible && <CreateGameForm />}
-        </Box>
-      </div>
+      </Container>
     </div>
   );
 }

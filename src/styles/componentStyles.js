@@ -69,6 +69,10 @@ const myStyles = {
       boxShadow: `0 0 0px 8px ${MAIN_COLOR}80`,
     },
   },
+  progress: {
+    marginTop: 16,
+    color: MAIN_COLOR,
+  },
 };
 
-export { myStyles };
+export { myStyles, MAIN_COLOR };
