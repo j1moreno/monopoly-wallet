@@ -52,6 +52,8 @@ const initialPlayerData = {
   account: 10000,
 };
 
+const MAX_WITHDRAW_AMOUNT = 10000;
+
 export default function GameDataDisplay(props) {
   const classes = useStyles();
   // state *********************************************************
@@ -179,7 +181,7 @@ export default function GameDataDisplay(props) {
         transactPartners.includes(p.name)
       );
       if (selectedPlayers.length === 0) {
-        return playerData.account;
+        return MAX_WITHDRAW_AMOUNT;
       } else {
         return Math.min(...selectedPlayers.map((p) => p.account));
       }
