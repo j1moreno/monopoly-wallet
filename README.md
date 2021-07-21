@@ -10,6 +10,8 @@ Full-stack application created using AWS Amplify.
 
 React client, GraphQL API using AWS AppSync.
 
+Working demo here: https://dev.ds8pcmdxi5rhl.amplifyapp.com
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
