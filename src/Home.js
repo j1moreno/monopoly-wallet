@@ -29,7 +29,11 @@ export default function Home() {
           justifyContent="center"
         >
           <div>
-            <Typography variant="h6">
+            <Typography
+              variant="h6"
+              className={classes.headerText}
+              style={{ marginTop: 16 }}
+            >
               Create a game and track player accounts and transactions. <br />{" "}
               Play Monopoly without counting cash.
             </Typography>

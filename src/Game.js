@@ -53,32 +53,35 @@ export default function Game() {
           alignItems="center"
           justifyContent="center"
         >
-          <Box
-            margin={2}
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
+          <Typography
+            variant="h6"
+            className={classes.headerText}
+            style={{
+              marginTop: 32,
+              marginLeft: 64,
+              marginRight: 64,
+              fontWeight: "bold",
+            }}
           >
-            <Typography variant="h6">
-              Choose a user name and enter the game password
-            </Typography>
-          </Box>
+            Choose a user name and enter the game password
+          </Typography>
 
           <input
             onChange={(event) => setInput("username", event.target.value)}
             value={formState.username}
             placeholder="create a user name"
+            style={{ marginTop: 32 }}
           />
           <input
             onChange={(event) => setInput("password", event.target.value)}
             value={formState.password}
             placeholder="enter game password"
+            style={{ marginTop: 24 }}
           />
           <Button
             className={classes.button}
             onClick={validatePassword}
-            style={{ marginBottom: 8 }}
+            style={{ margin: 32 }}
           >
             Submit
           </Button>

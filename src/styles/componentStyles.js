@@ -74,10 +74,13 @@ const myStyles = {
     color: MAIN_COLOR,
   },
   passwordEnter: {
-    margin: 8,
+    margin: 24,
     border: `2px solid ${MAIN_COLOR}`,
     boxSizing: "border-box",
     borderRadius: "32px",
+  },
+  headerText: {
+    textAlign: "center",
   },
 };
 
