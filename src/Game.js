@@ -7,6 +7,10 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import GameDataDisplay from "./components/GameDataDisplay";
 import { v4 as uuidv4 } from "uuid";
+import { Box, Button, Typography, Grid } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { myStyles, MAIN_COLOR } from "./styles/componentStyles";
+import MainAppBar from "./components/MainAppBar";
 
 const USER_IN_GAME = 0;
 const INVALID_GAME_ID = 1;
@@ -14,8 +18,12 @@ const NEED_PASSWORD = 2;
 const INCORRECT_PASSWORD = 3;
 const LOADING_DATA = 4;
 
+const useStyles = makeStyles((theme) => myStyles);
+
 export default function Game() {
   let { id } = useParams();
+
+  const classes = useStyles();
 
   const [gameState, setGameState] = useState(LOADING_DATA);
 
@@ -37,19 +45,47 @@ export default function Game() {
   const PasswordPrompt = (isRetry) => {
     return (
       <div>
-        <h2>Need Password</h2>
-        <input
-          onChange={(event) => setInput("username", event.target.value)}
-          value={formState.username}
-          placeholder="create a user name"
-        />
-        <input
-          onChange={(event) => setInput("password", event.target.value)}
-          value={formState.password}
-          placeholder="password"
-        />
-        <button onClick={validatePassword}>Submit</button>
-        {isRetry && <div>Incorrect Password!</div>}
+        <MainAppBar />
+        <Box
+          className={classes.passwordEnter}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Box
+            margin={2}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Typography variant="h6">
+              Choose a user name and enter the game password
+            </Typography>
+          </Box>
+
+          <input
+            onChange={(event) => setInput("username", event.target.value)}
+            value={formState.username}
+            placeholder="create a user name"
+          />
+          <input
+            onChange={(event) => setInput("password", event.target.value)}
+            value={formState.password}
+            placeholder="enter game password"
+          />
+          <Button
+            className={classes.button}
+            onClick={validatePassword}
+            style={{ marginBottom: 8 }}
+          >
+            Submit
+          </Button>
+          {isRetry && (
+            <div style={{ color: MAIN_COLOR }}>Incorrect Password!</div>
+          )}
+        </Box>
       </div>
     );
   };

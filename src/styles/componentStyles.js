@@ -73,6 +73,12 @@ const myStyles = {
     marginTop: 16,
     color: MAIN_COLOR,
   },
+  passwordEnter: {
+    margin: 8,
+    border: `2px solid ${MAIN_COLOR}`,
+    boxSizing: "border-box",
+    borderRadius: "32px",
+  },
 };
 
 export { myStyles, MAIN_COLOR };
